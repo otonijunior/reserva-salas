@@ -23,8 +23,8 @@ export function criarReserva(reservas, pedido, agora = new Date()) {
     return { status: 400, erro: 'Datas inválidas: use ISO 8601, ex.: 2026-12-01T14:00:00-03:00' };
   }
   if (fim <= inicio) return { status: 400, erro: 'O fim precisa ser depois do início' };
+  if (inicio < agora) return { status: 400, erro: 'Não é possível reservar no passado' };
 
-  // TODO CA-3 (SPEC-001): reserva que começa no passado é recusada com 400. (Lab 1)
   // TODO CA-2 (SPEC-001): conflito de horário na mesma sala é recusado com 409. (Lab 3, teste antes!)
 
   const reserva = {

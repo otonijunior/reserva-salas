@@ -35,5 +35,14 @@ test('fim antes do início devolve 400', () => {
   assert.equal(r.status, 400);
 });
 
-// Lab 1: escreva aqui o teste do CA-3 ANTES de mexer em src/reservas.js.
+test('CA-3: reserva que começa no passado devolve 400', () => {
+  const r = criarReserva([], pedido({ inicio: '2026-12-01T07:00:00-03:00' }), AGORA);
+  assert.equal(r.status, 400);
+});
+
+test('CA-3: reserva que começa exatamente agora é aceita', () => {
+  const r = criarReserva([], pedido({ inicio: '2026-12-01T08:00:00-03:00' }), AGORA);
+  assert.equal(r.status, 201);
+});
+
 // Lab 3: escreva aqui os testes do CA-2 ANTES de mexer em src/reservas.js.
