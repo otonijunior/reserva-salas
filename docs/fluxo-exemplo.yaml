@@ -1,0 +1,36 @@
+# Fluxo de exemplo da mini-fábrica (Lab 4). Copie para docs/fluxo.yaml e adapte ao grupo.
+# Inspirado no ciclo agêntico (ADLC) da Factory 2.0: cada etapa tem quem faz, o que entrega e o portão de saída.
+fluxo: mini-fabrica
+versao: 1.0.0
+etapas:
+  - id: intencao
+    quem: pessoa
+    entrega: problema descrito e SPEC em rascunho (docs/specs/)
+    portao: o grupo concorda com o problema e com quem é o dono
+
+  - id: contrato
+    quem: agente planejador        # .claude/agents/planejador.md
+    entrega: perguntas, plano por critério e ordem dos passos
+    portao: uma pessoa responde as perguntas e aprova o plano      # portão humano
+
+  - id: construcao
+    quem: agente construtor        # .claude/agents/construtor.md
+    entrega: teste que falhou, código, npm test verde, commit numa branch
+    portao: npm test verde e hook de segredo sem bloqueio
+
+  - id: revisao
+    quem: agente revisor           # .claude/agents/revisor.md, contexto separado do construtor
+    entrega: APROVADO ou BLOQUEADO com a tabela critério x teste
+    portao: APROVADO; se BLOQUEADO, volta para construcao
+
+  - id: pr
+    quem: sistema                  # GitHub Actions: ci.yml e revisao-ia.yml
+    entrega: PR com CI verde e comentário da revisão por IA
+    portao: CI verde e uma pessoa do grupo aprova o PR             # portão humano
+
+  - id: licoes
+    quem: pessoa
+    entrega: cada falha do fluxo vira uma lição em docs/licoes/
+    portao: pelo menos uma lição vira mudança neste arquivo ou num subagente
+
+# Regra de ouro: quando o agente precisar de uma pessoa, ele para e diz QUEM, O QUÊ e POR QUÊ.

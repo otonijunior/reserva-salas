@@ -1,0 +1,21 @@
+# CI do projeto: roda em todo PR e em todo push na main.
+# Depois do primeiro run verde, ligue a proteção da main (Settings > Branches) exigindo o check "testes".
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Testes
+        run: npm test
+      - name: Procura segredo nos arquivos versionados
+        run: npm run segredos

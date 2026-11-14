@@ -1,0 +1,2 @@
+# Fim de linha LF em tudo: o hook .githooks/pre-commit quebra com CRLF no Windows.
+* text=auto eol=lf

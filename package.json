@@ -1,0 +1,16 @@
+{
+  "name": "reserva-salas",
+  "version": "0.1.0",
+  "description": "Projeto-modelo da disciplina Engenharia de Software com IA (UNIFOR): API de reserva de salas.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test",
+    "segredos": "node scripts/bloqueia-segredo.js --tudo",
+    "hooks:git": "git config core.hooksPath .githooks"
+  }
+}

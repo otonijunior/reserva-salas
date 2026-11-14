@@ -1,0 +1,5 @@
+#!/bin/sh
+# Hook de git: funciona com qualquer ferramenta de IA, ou sem nenhuma.
+# Ligar uma vez por clone:  npm run hooks:git
+node scripts/bloqueia-segredo.js --git || exit 1
+npm test --silent || { echo "Testes falhando: commit bloqueado."; exit 1; }

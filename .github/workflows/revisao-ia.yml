@@ -1,0 +1,54 @@
+# Revisão automática do PR por IA, com o Claude Code em modo headless (claude -p).
+# Precisa do segredo ANTHROPIC_API_KEY no repositório ou na organização da turma
+# (Settings > Secrets and variables > Actions). Sem a chave, o job só avisa e passa.
+# Dica do professor: uma chave só, na organização da disciplina, com limite de gasto no console da Anthropic.
+# Confira a sintaxe atual na documentação do Claude Code: ela evolui.
+name: Revisão por IA
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confere se há chave
+        id: chave
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "Sem ANTHROPIC_API_KEY: revisão por IA pulada."; fi
+
+      - uses: actions/checkout@v4
+        if: steps.chave.outputs.ok == 'true'
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        if: steps.chave.outputs.ok == 'true'
+        with:
+          node-version: 20
+
+      - name: Revisa o diff contra as SPECs
+        if: steps.chave.outputs.ok == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          git diff "origin/${{ github.base_ref }}...HEAD" > diff.txt
+          {
+            echo "=== INSTRUÇÕES DO REVISOR ==="; cat .claude/agents/revisor.md
+            echo "=== SPECS ==="; cat docs/specs/SPEC-*.md
+            echo "=== DIFF DO PR ==="; cat diff.txt
+          } | claude -p "Você é o revisor descrito nas instruções acima. Revise o DIFF DO PR contra as SPECS. Você não pode rodar comandos: julgue pelo diff. Responda em português, em Markdown, no formato pedido." > revisao.md
+
+      - name: Comenta no PR
+        if: steps.chave.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file revisao.md
